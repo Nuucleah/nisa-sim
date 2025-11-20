@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>おすすめNISA口座ランキング</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* シミュレーターと共通の色味・雰囲気 */
+            --primary-green: #4CAF50;
+            --text-main: #2d3436;
+            --bg-color: #f7f9fc;
+
+            /* ランキング用アクセント */
+            --rank-1: #FFD700;
+            /* 金 */
+            --rank-2: #C0C0C0;
+            /* 銀 */
+            --rank-3: #CD7F32;
+            /* 銅 */
+            --btn-gradient: linear-gradient(to right, #ff6b6b, #ee5253);
+        }
+
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 30px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        }
+
+        /* ヘッダー */
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--text-main);
+            margin-bottom: 30px;
+            font-size: 24px;
+            letter-spacing: 0.05em;
+        }
+
+        .header-sub {
+            font-size: 14px;
+            color: #636e72;
+        }
+
+        /* イントロ */
+        .intro-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 20px;
+            text-align: center;
+            margin-bottom: 40px;
+            border: 1px solid #e9ecef;
+        }
+
+        .intro-card h2 {
+            font-size: 16px;
+            margin: 0 0 10px 0;
+            color: var(--primary-green);
+        }
+
+        .intro-card p {
+            font-size: 13px;
+            color: #636e72;
+            margin: 0;
+        }
+
+        /* ランキングアイテム */
+        .rank-item {
+            border: 2px solid #f0f2f5;
+            border-radius: 24px;
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 1位強調 */
+        .rank-item.rank-1 {
+            border-color: var(--rank-1);
+            box-shadow: 0 10px 25px rgba(255, 215, 0, 0.1);
+        }
+
+        /* 順位バッジ */
+        .rank-badge {
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: var(--text-main);
+            color: white;
+            padding: 8px 20px 8px 15px;
+            border-radius: 0 0 20px 0;
+            font-weight: 900;
+            font-size: 16px;
+            z-index: 2;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .rank-1 .rank-badge {
+            background: var(--rank-1);
+            color: #333;
+            font-size: 18px;
+            padding: 10px 25px 10px 20px;
+        }
+
+        .rank-2 .rank-badge {
+            background: var(--rank-2);
+            color: white;
+        }
+
+        .rank-3 .rank-badge {
+            background: var(--rank-3);
+            color: white;
+        }
+
+        /* 証券会社ヘッダー */
+        .rank-header {
+            padding: 50px 20px 20px;
+            text-align: center;
+            background: #fff;
+        }
+
+        .broker-name {
+            font-size: 22px;
+            font-weight: 900;
+            color: var(--text-main);
+            margin: 0;
+        }
+
+        .broker-catch {
+            display: inline-block;
+            font-size: 12px;
+            color: white;
+            background: var(--text-main);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .rank-1 .broker-catch {
+            background: var(--primary-green);
+        }
+
+        /* コンテンツエリア */
+        .rank-body {
+            padding: 0 30px 30px;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .broker-img {
+            flex: 0 0 130px;
+            height: 130px;
+            background: #f0f2f5;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #b2bec3;
+            font-size: 12px;
+            font-weight: bold;
+            overflow: hidden;
+        }
+
+        /* ASPの画像がはみ出ないように調整 */
+        .broker-img img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .broker-points {
+            flex: 1;
+        }
+
+        .point-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .point-list li {
+            position: relative;
+            padding-left: 24px;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #636e72;
+            font-weight: bold;
+        }
+
+        .point-list li::before {
+            content: '\f00c';
+            /* FontAwesome check */
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            top: 2px;
+            color: var(--primary-green);
+        }
+
+        /* ボタン */
+        .rank-footer {
+            padding: 0 30px 30px;
+            text-align: center;
+        }
+
+        .btn-cv {
+            display: block;
+            width: 100%;
+            max-width: 320px;
+            margin: 0 auto;
+            background: var(--btn-gradient);
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 16px;
+            border-radius: 50px;
+            font-size: 16px;
+            box-shadow: 0 5px 15px rgba(238, 82, 83, 0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-cv:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+            box-shadow: 0 8px 20px rgba(238, 82, 83, 0.4);
+        }
+
+        /* 比較表 */
+        .comparison-section {
+            margin-top: 50px;
+            background: #fff;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid #e9ecef;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 18px;
+            font-weight: 900;
+            margin: 20px 0;
+            color: var(--text-main);
+        }
+
+        .comp-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 500px;
+        }
+
+        .comp-table th,
+        .comp-table td {
+            padding: 15px;
+            text-align: center;
+            font-size: 13px;
+            border-bottom: 1px solid #f0f2f5;
+        }
+
+        .comp-table th {
+            background: #f8f9fa;
+            color: #636e72;
+            font-weight: bold;
+        }
+
+        .col-best {
+            background: #f0fff4;
+            color: var(--primary-green);
+            font-weight: bold;
+        }
+
+        /* フッター */
+        footer {
+            text-align: center;
+            font-size: 11px;
+            color: #b2bec3;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px dashed #dfe6e9;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 10px;
+            color: var(--primary-green);
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 13px;
+        }
+
+        /* スマホ対応 */
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            .rank-body {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+
+            .point-list li {
+                text-align: left;
+            }
+
+            .comparison-section {
+                overflow-x: auto;
+            }
+
+            .rank-header {
+                padding-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <header>
+            <h1>🏆 おすすめNISA口座</h1>
+            <div class="header-sub">シミュレーション結果を実現するための<br>最強のパートナーを選ぼう</div>
+        </header>
+
+        <div class="intro-card">
+            <h2><i class="fa-solid fa-circle-question"></i> どこで始めたらいい？</h2>
+            <p>NISA口座は1人1つしか作れません。<br><strong>「手数料」</strong>と<strong>「ポイント還元」</strong>で選ぶのが正解です。</p>
+        </div>
+
+        <div class="rank-item rank-1">
+            <div class="rank-badge"><i class="fa-solid fa-crown"></i> 1位</div>
+            <div class="rank-header">
+                <h3 class="broker-name">SBI証券</h3>
+                <span class="broker-catch">口座開設数No.1！迷ったらココ</span>
+            </div>
+            <div class="rank-body">
+                <div class="broker-img">
+                    SBI証券<br>バナー画像
+                </div>
+
+                <div class="broker-points">
+                    <ul class="point-list">
+                        <li>クレカ積立で<strong>Vポイント等</strong>が貯まる！</li>
+                        <li>投資信託のラインナップ数が業界最強クラス</li>
+                        <li>保有しているだけでポイントが貰える</li>
+                        <li>手数料はもちろん完全無料（ゼロ革命）</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="rank-footer">
+                <a href="https://www.sbisec.co.jp/" class="btn-cv" target="_blank">SBI証券 公式サイトを見る <i
+                        class="fa-solid fa-chevron-right"></i></a>
+            </div>
+        </div>
+
+        <div class="rank-item rank-2">
+            <div class="rank-badge">2位</div>
+            <div class="rank-header">
+                <h3 class="broker-name">楽天証券</h3>
+                <span class="broker-catch">楽天ユーザーなら一択！</span>
+            </div>
+            <div class="rank-body">
+                <div class="broker-img">
+                    楽天証券<br>バナー画像
+                </div>
+                <div class="broker-points">
+                    <ul class="point-list">
+                        <li>楽天カード積立で<strong>楽天ポイント</strong>が貯まる</li>
+                        <li>貯まったポイントを使って投資ができる</li>
+                        <li>画面が直感的で見やすく、初心者に大人気</li>
+                        <li>日経新聞が無料で読める（日経テレコン）</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="rank-footer">
+                <a href="https://www.rakuten-sec.co.jp/" class="btn-cv" target="_blank">楽天証券 公式サイトを見る <i
+                        class="fa-solid fa-chevron-right"></i></a>
+            </div>
+        </div>
+
+        <div class="rank-item rank-3">
+            <div class="rank-badge">3位</div>
+            <div class="rank-header">
+                <h3 class="broker-name">マネックス証券</h3>
+                <span class="broker-catch">還元率1.1%！隠れた本命</span>
+            </div>
+            <div class="rank-body">
+                <div class="broker-img">
+                    マネックス<br>バナー画像
+                </div>
+                <div class="broker-points">
+                    <ul class="point-list">
+                        <li>マネックスカード積立で<strong>最大1.1%還元</strong></li>
+                        <li>dポイント派にもおすすめの連携</li>
+                        <li>米国株に強く、個別株投資も充実</li>
+                        <li>独自の分析ツールが非常に優秀</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="rank-footer">
+                <a href="https://www.monex.co.jp/" class="btn-cv" target="_blank">マネックス証券 公式サイトを見る <i
+                        class="fa-solid fa-chevron-right"></i></a>
+            </div>
+        </div>
+
+        <div class="comparison-section">
+            <div class="section-title">📊 3社かんたん比較表</div>
+            <div style="overflow-x:auto;">
+                <table class="comp-table">
+                    <thead>
+                        <tr>
+                            <th>項目</th>
+                            <th class="col-best">SBI証券</th>
+                            <th>楽天証券</th>
+                            <th>マネックス</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>クレカ積立</td>
+                            <td class="col-best">0.5%〜5.0%</td>
+                            <td>0.5%〜1.0%</td>
+                            <td>1.1% (最大)</td>
+                        </tr>
+                        <tr>
+                            <td>ポイント</td>
+                            <td>Vポイント等</td>
+                            <td>楽天ポイント</td>
+                            <td>dポイント等</td>
+                        </tr>
+                        <tr>
+                            <td>商品数</td>
+                            <td class="col-best">2600本以上</td>
+                            <td class="col-best">2600本以上</td>
+                            <td>1700本以上</td>
+                        </tr>
+                        <tr>
+                            <td>使いやすさ</td>
+                            <td>★★★★☆</td>
+                            <td class="col-best" style="color:#2c3e50;">★★★★★</td>
+                            <td>★★★★☆</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <footer>
+            <p>※本ページはプロモーションが含まれています。<br>キャンペーン内容や還元率は変更される場合があります。最新情報は各公式サイトをご確認ください。</p>
+            <a href="index.html" class="back-link"><i class="fa-solid fa-arrow-left"></i> シミュレーターに戻る</a>
+        </footer>
+
+    </div>
+
+</body>
+
+</html>

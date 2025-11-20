@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NISA人生設計シミュレーター</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-green: #4CAF50;
+            --primary-green-light: #E8F5E9;
+            --primary-orange: #FF9800;
+            --primary-orange-light: #FFF3E0;
+            --text-main: #2c3e50;
+            --bg-color: #f7f9fc;
+            --card-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        }
+
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            padding-bottom: 100px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 30px;
+            box-shadow: var(--card-shadow);
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--text-main);
+            margin-bottom: 30px;
+            font-size: 24px;
+            letter-spacing: 0.05em;
+        }
+
+        /* タブ */
+        .tabs-wrapper {
+            background: #edf2f7;
+            border-radius: 20px;
+            padding: 5px;
+            display: flex;
+            margin-bottom: 35px;
+            position: relative;
+        }
+
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #718096;
+            border-radius: 16px;
+            transition: all 0.3s ease;
+            z-index: 1;
+        }
+
+        .tab i {
+            margin-right: 6px;
+        }
+
+        .tab.active {
+            background: white;
+            color: var(--primary-green);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .tab.active[data-mode="with"] {
+            color: var(--primary-orange);
+        }
+
+        /* 入力エリア */
+        .input-section {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .input-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .age-card {
+            background: linear-gradient(135deg, #f6f9fc 0%, #edf2f7 100%);
+            padding: 20px;
+            border-radius: 20px;
+            text-align: center;
+            margin-bottom: 30px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .age-card label {
+            display: block;
+            font-size: 13px;
+            color: #718096;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        .label-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 15px;
+            font-weight: bold;
+            color: #4a5568;
+        }
+
+        /* ヒント */
+        .info-icon {
+            color: #b2bec3;
+            cursor: pointer;
+            margin-left: 6px;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        .info-icon:hover {
+            color: #2196f3;
+        }
+
+        .hint-box {
+            display: none;
+            background: #e3f2fd;
+            color: #455a64;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            margin-bottom: 10px;
+            line-height: 1.6;
+            border: 1px solid #bbdefb;
+        }
+
+        .hint-box strong {
+            color: #1565c0;
+        }
+
+        /* スライダー */
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: #e2e8f0;
+            outline: none;
+            cursor: pointer;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--primary-green);
+            border: 3px solid white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+        }
+
+        .range-orange::-webkit-slider-thumb {
+            background: var(--primary-orange);
+        }
+
+        /* 数値入力と+/-ボタン */
+        .input-number-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 5px;
+        }
+
+        .input-number-wrapper input {
+            width: 100px;
+            padding: 8px 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            text-align: right;
+            font-size: 18px;
+            font-weight: bold;
+            color: #2d3748;
+            transition: border-color 0.2s;
+            font-family: 'Noto Sans JP', sans-serif;
+        }
+
+        .input-number-wrapper input:focus {
+            outline: none;
+            border-color: var(--primary-green);
+        }
+
+        .input-number-wrapper .pm-btn {
+            background: #e2e8f0;
+            border: none;
+            color: #4a5568;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+            user-select: none;
+        }
+
+        .input-number-wrapper .pm-btn:hover {
+            background: #cbd5e0;
+        }
+
+        .input-number-wrapper .pm-btn:active {
+            transform: scale(0.95);
+        }
+
+        .unit-span {
+            font-weight: bold;
+            color: #4a5568;
+            font-size: 14px;
+            min-width: 1.5em;
+            text-align: left;
+        }
+
+        /* 連携ボタン */
+        .sync-area {
+            text-align: center;
+            margin-bottom: 30px;
+            background: #E3F2FD;
+            padding: 20px;
+            border-radius: 20px;
+            border: 2px dashed #90CAF9;
+        }
+
+        .sync-msg {
+            font-size: 13px;
+            color: #1976D2;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .btn-sync {
+            background: #2196F3;
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 14px;
+            box-shadow: 0 4px 10px rgba(33, 150, 243, 0.3);
+            transition: transform 0.2s;
+        }
+
+        .btn-sync:hover {
+            transform: translateY(-2px);
+        }
+
+        .auto-sync-badge {
+            display: inline-block;
+            font-size: 11px;
+            color: #1565c0;
+            background: #bbdefb;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-left: 5px;
+            vertical-align: middle;
+            display: none;
+        }
+
+        /* 詳細設定 */
+        .details-trigger {
+            text-align: center;
+            margin: 30px 0 10px;
+        }
+
+        .btn-details {
+            background: #f7fafc;
+            border: none;
+            color: #718096;
+            font-size: 14px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            padding: 5px 15px;
+            border-radius: 20px;
+        }
+
+        .details-content {
+            display: none;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+        }
+
+        .chip {
+            font-size: 12px;
+            padding: 5px 12px;
+            background: white;
+            border: 1px solid #cbd5e0;
+            border-radius: 15px;
+            cursor: pointer;
+            color: #4a5568;
+            display: inline-block;
+            margin: 5px 5px 0 0;
+        }
+
+        /* 結果カード */
+        .results-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f0fff4 100%);
+            padding: 30px;
+            border-radius: 25px;
+            text-align: center;
+            margin-bottom: 30px;
+            border: 1px solid #e6fffa;
+            box-shadow: 0 10px 30px rgba(72, 187, 120, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .results-card.orange-theme {
+            background: linear-gradient(135deg, #ffffff 0%, #fffaf0 100%);
+            border-color: #fff5f5;
+            box-shadow: 0 10px 30px rgba(237, 137, 54, 0.1);
+        }
+
+        .res-label {
+            font-size: 13px;
+            color: #718096;
+            font-weight: bold;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .res-main {
+            font-size: 42px;
+            font-weight: 800;
+            color: var(--primary-green);
+            margin: 5px 0 15px;
+            line-height: 1.2;
+        }
+
+        .orange-text {
+            color: var(--primary-orange) !important;
+        }
+
+        .cheer-msg {
+            font-size: 14px;
+            font-weight: bold;
+            color: #ffffff;
+            background: var(--primary-green);
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+        }
+
+        .cheer-orange {
+            background: var(--primary-orange);
+        }
+
+        .res-sub-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .res-sub-item {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 8px 15px;
+            border-radius: 10px;
+            font-size: 13px;
+            color: #4a5568;
+            font-weight: bold;
+        }
+
+        .inflation-note {
+            font-size: 12px;
+            color: #718096;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px dashed #cbd5e0;
+            display: none;
+        }
+
+        .nisa-badge {
+            display: inline-block;
+            background: #FEFCBF;
+            color: #B7791F;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 320px;
+            width: 100%;
+            margin-bottom: 30px;
+            background: white;
+            border-radius: 20px;
+            padding: 10px;
+        }
+
+        .share-area {
+            text-align: center;
+            margin-bottom: 30px;
+            border-top: 1px solid #edf2f7;
+            padding-top: 30px;
+        }
+
+        .x-share-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #000;
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-size: 14px;
+            transition: 0.2s;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .x-share-btn:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
+
+        .x-share-btn i {
+            margin-right: 8px;
+            font-size: 18px;
+        }
+
+        .cta-area {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #edf2f7;
+        }
+
+        .cta-btn {
+            display: block;
+            width: 100%;
+            max-width: 300px;
+            margin: 0 auto;
+            background: linear-gradient(to right, #FF7043, #FFCA28);
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 16px;
+            box-shadow: 0 5px 15px rgba(255, 112, 67, 0.3);
+            transition: 0.2s;
+        }
+
+        .cta-btn:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
+
+        .sticky-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: white;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+            padding: 15px 20px;
+            box-sizing: border-box;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 999;
+        }
+
+        .sf-label {
+            font-size: 12px;
+            color: #636e72;
+            font-weight: bold;
+        }
+
+        .sf-val {
+            font-size: 20px;
+            font-weight: 900;
+            color: var(--primary-green);
+        }
+
+        .sf-val.orange-text {
+            color: var(--primary-orange);
+        }
+
+        @media (min-width: 801px) {
+            .sticky-footer {
+                display: none !important;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            .res-main {
+                font-size: 32px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>🌱 NISA・人生設計シミュレーター</h1>
+
+        <div class="tabs-wrapper">
+            <div class="tab active" onclick="switchTab('sim')" data-mode="sim">
+                <i class="fa-solid fa-chart-line"></i> 増やす
+            </div>
+            <div class="tab" onclick="switchTab('with')" data-mode="with">
+                <i class="fa-solid fa-wallet"></i> 使う
+            </div>
+        </div>
+
+        <div id="sec-sim" class="input-section active">
+            <div class="age-card">
+                <label>スタート年齢</label>
+                <div class="input-number-wrapper" style="justify-content:center;">
+                    <button type="button" class="pm-btn" onclick="changeValue('sim-age', -1)">−</button>
+                    <input type="number" id="sim-age" value="30">
+                    <span class="unit-span">歳</span>
+                    <button type="button" class="pm-btn" onclick="changeValue('sim-age', 1)">＋</button>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <div class="label-row">
+                    <label>毎月の積立額 <i class="fa-solid fa-circle-info info-icon"
+                            onclick="toggleHint('hint-amount')"></i></label>
+                    <div class="input-number-wrapper">
+                        <button type="button" class="pm-btn" onclick="changeValue('sim-amount-num', -1000)">−</button>
+                        <input type="text" id="sim-amount-num" value="50,000" class="formatted-input">
+                        <span class="unit-span">円</span>
+                        <button type="button" class="pm-btn" onclick="changeValue('sim-amount-num', 1000)">＋</button>
+                    </div>
+                </div>
+                <div id="hint-amount" class="hint-box"><strong>💡
+                        積立額の目安は？</strong><br>つみたて投資枠の上限は月10万円です。無理なく続けられる額（手取りの10〜20%）がおすすめです。</div>
+                <input type="range" id="sim-amount-range" value="50000" min="1000" max="300000" step="1000">
+            </div>
+
+            <div class="input-group">
+                <div class="label-row">
+                    <label>積立期間</label>
+                    <div class="input-number-wrapper">
+                        <button type="button" class="pm-btn" onclick="changeValue('sim-years-num', -1)">−</button>
+                        <input type="number" id="sim-years-num" value="15">
+                        <span class="unit-span">年</span>
+                        <button type="button" class="pm-btn" onclick="changeValue('sim-years-num', 1)">＋</button>
+                    </div>
+                </div>
+                <input type="range" id="sim-years-range" value="15" min="1" max="50">
+            </div>
+
+            <div class="input-group">
+                <div class="label-row">
+                    <label>想定年利 <i class="fa-solid fa-circle-info info-icon"
+                            onclick="toggleHint('hint-rate')"></i></label>
+                    <div class="input-number-wrapper">
+                        <button type="button" class="pm-btn" onclick="changeValue('sim-rate-num', -0.1)">−</button>
+                        <input type="number" id="sim-rate-num" value="5" step="0.1">
+                        <span class="unit-span">%</span>
+                        <button type="button" class="pm-btn" onclick="changeValue('sim-rate-num', 0.1)">＋</button>
+                    </div>
+                </div>
+                <div id="hint-rate" class="hint-box"><strong>💡
+                        年利の目安は？</strong><br>全世界株式やS&P500の過去平均は年利5〜7%程度です。保守的に見積もるなら3〜5%がおすすめです。</div>
+                <input type="range" id="sim-rate-range" value="5" min="0" max="15" step="0.1">
+            </div>
+        </div>
+
+        <div id="sec-with" class="input-section">
+            <div class="sync-area">
+                <div class="sync-msg">✨ 「増やす」の結果を引き継げます</div>
+                <button class="btn-sync" onclick="syncFromSim()">
+                    <i class="fa-solid fa-arrow-down"></i> 積立結果をコピーして連動開始
+                </button>
+                <div id="sync-toast"
+                    style="display:none; color:#1565c0; font-weight:bold; margin-top:10px; font-size:12px;">反映しました！
+                </div>
+            </div>
+
+            <div class="age-card">
+                <label>取り崩し開始 <span id="auto-sync-badge" class="auto-sync-badge"><i class="fa-solid fa-link"></i>
+                        連動中</span></label>
+                <div class="input-number-wrapper" style="justify-content:center;">
+                    <button type="button" class="pm-btn" onclick="changeValue('wd-age', -1)">−</button>
+                    <input type="number" id="wd-age" value="60">
+                    <span class="unit-span">歳</span>
+                    <button type="button" class="pm-btn" onclick="changeValue('wd-age', 1)">＋</button>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <div class="label-row">
+                    <label>資産残高</label>
+                    <div class="input-number-wrapper">
+                        <button type="button" class="pm-btn" onclick="changeValue('wd-init-num', -100000)">−</button>
+                        <input type="text" id="wd-init-num" value="20,000,000" class="formatted-input">
+                        <span class="unit-span">円</span>
+                        <button type="button" class="pm-btn" onclick="changeValue('wd-init-num', 100000)">＋</button>
+                    </div>
+                </div>
+                <input type="range" id="wd-init-range" value="20000000" min="1000000" max="100000000" step="100000"
+                    class="range-orange">
+            </div>
+
+            <div class="input-group">
+                <div class="label-row">
+                    <label>毎月の受取額</label>
+                    <div class="input-number-wrapper">
+                        <button type="button" class="pm-btn" onclick="changeValue('wd-amount-num', -5000)">−</button>
+                        <input type="text" id="wd-amount-num" value="100,000" class="formatted-input">
+                        <span class="unit-span">円</span>
+                        <button type="button" class="pm-btn" onclick="changeValue('wd-amount-num', 5000)">＋</button>
+                    </div>
+                </div>
+                <input type="range" id="wd-amount-range" value="100000" min="10000" max="500000" step="5000"
+                    class="range-orange">
+            </div>
+
+            <div class="input-group">
+                <div class="label-row">
+                    <label>運用年利 <i class="fa-solid fa-circle-info info-icon"
+                            onclick="toggleHint('hint-wd-rate')"></i></label>
+                    <div class="input-number-wrapper">
+                        <button type="button" class="pm-btn" onclick="changeValue('wd-rate-num', -0.1)">−</button>
+                        <input type="number" id="wd-rate-num" value="3" step="0.1">
+                        <span class="unit-span">%</span>
+                        <button type="button" class="pm-btn" onclick="changeValue('wd-rate-num', 0.1)">＋</button>
+                    </div>
+                </div>
+                <div id="hint-wd-rate" class="hint-box"><strong>💡 老後は安全に！</strong><br>資産を大きく減らさないよう、2〜4%程度の安定運用がおすすめです。
+                </div>
+                <input type="range" id="wd-rate-range" value="3" min="0" max="10" step="0.1" class="range-orange">
+            </div>
+        </div>
+
+        <div class="details-trigger">
+            <button class="btn-details" onclick="toggleDetails()">
+                <span id="dt-icon">＋</span> 詳細設定
+            </button>
+        </div>
+        <div class="details-content" id="details-area">
+            <div class="input-group">
+                <div class="label-row">
+                    <label>
+                        <i class="fa-solid fa-money-bill-trend-up"></i> 想定インフレ率
+                        <i class="fa-solid fa-circle-info info-icon" onclick="toggleHint('hint-inf')"></i>
+                    </label>
+                    <div class="input-number-wrapper">
+                        <button type="button" class="pm-btn" onclick="changeValue('inf-rate-num', -0.1)">−</button>
+                        <input type="number" id="inf-rate-num" value="0" step="0.1">
+                        <span class="unit-span">%</span>
+                        <button type="button" class="pm-btn" onclick="changeValue('inf-rate-num', 0.1)">＋</button>
+                    </div>
+                </div>
+                <div id="hint-inf" class="hint-box"><strong>💡
+                        インフレとは？</strong><br>モノの値段が上がることです。日本の目標は年2%。設定すると「将来の実質的な価値」や「生活費の上昇」を考慮できます。</div>
+                <input type="range" id="inf-rate-range" value="0" min="0" max="5" step="0.1">
+                <div style="margin-top:10px;">
+                    <span class="chip" onclick="setInf(0)">0% (なし)</span>
+                    <span class="chip" onclick="setInf(2.0)">2% (日銀目標)</span>
+                    <span class="chip" onclick="setInf(3.5)">3.5% (高騰時)</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="results-card" id="result-card">
+            <div class="res-label" id="res-title">--歳時点の資産合計</div>
+            <div id="cheer-msg" class="cheer-msg">資産形成を始めよう！</div>
+            <div class="res-main" id="res-main">0 円</div>
+            <div class="res-sub-container" id="res-sub"></div>
+            <div class="inflation-note" id="inflation-note"></div>
+            <div class="nisa-badge" id="nisa-alert">⚠️ NISA枠上限到達</div>
+        </div>
+
+        <div class="chart-container"><canvas id="myChart"></canvas></div>
+
+        <div class="share-area">
+            <a href="#" id="x-share-link" class="x-share-btn" target="_blank">
+                <i class="fa-brands fa-x-twitter"></i> Xで結果をポストする
+            </a>
+        </div>
+
+        <div class="cta-area">
+            <p style="font-size:13px; font-weight:bold; margin-bottom:10px; color:#4a5568;">将来のために、今すぐ行動！</p>
+            <a href="ranking.html" class="cta-btn">おすすめのNISA口座を見る <i class="fa-solid fa-chevron-right"></i></a>
+        </div>
+    </div>
+
+    <div class="sticky-footer">
+        <div class="sf-label" id="sf-label">将来の資産合計</div>
+        <div class="sf-val" id="sf-val">0 円</div>
+    </div>
+
+    <script>
+        /* --- 変数 --- */
+        let myChart = null;
+        let currentMode = 'sim';
+        let lastSimResult = { total: 0, endAge: 60 };
+        let shareData = { text: "" };
+        let simHistoryData = {}; // ★全年齢の資産履歴を保存
+
+        /* --- ヘルパー: カンマ区切り --- */
+        function formatNum(num) { return Number(num).toLocaleString(); }
+        function getVal(id) {
+            const el = document.getElementById(id);
+            if (!el) return 0;
+            const valStr = el.value.toString().replace(/,/g, '');
+            return parseFloat(valStr) || 0;
+        }
+        function setVal(id, num) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            if (el.classList.contains('formatted-input')) {
+                el.value = Number(num).toLocaleString();
+            } else {
+                el.value = num;
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            setupListeners();
+            loadParams();
+            calculate();
+        });
+
+        function setupListeners() {
+            const pairs = [
+                ['sim-amount-range', 'sim-amount-num'],
+                ['sim-years-range', 'sim-years-num'],
+                ['sim-rate-range', 'sim-rate-num'],
+                ['wd-init-range', 'wd-init-num'],
+                ['wd-amount-range', 'wd-amount-num'],
+                ['wd-rate-range', 'wd-rate-num'],
+                ['inf-rate-range', 'inf-rate-num']
+            ];
+
+            pairs.forEach(p => {
+                const range = document.getElementById(p[0]);
+                const input = document.getElementById(p[1]);
+                range.addEventListener('input', () => { setVal(p[1], range.value); calculate(); });
+                input.addEventListener('input', () => { range.value = getVal(p[1]); calculate(); });
+                input.addEventListener('focus', function () { if (this.classList.contains('formatted-input')) this.value = getVal(p[1]); });
+                input.addEventListener('blur', function () { if (this.classList.contains('formatted-input')) setVal(p[1], getVal(p[1])); });
+            });
+
+            document.getElementById('sim-age').addEventListener('input', calculate);
+
+            // ★連動ロジック (自動補完対応)
+            document.getElementById('wd-age').addEventListener('input', function () {
+                const newAge = parseInt(this.value);
+                if (simHistoryData[newAge] !== undefined) {
+                    const val = Math.floor(simHistoryData[newAge]);
+                    setVal('wd-init-num', val);
+                    document.getElementById('wd-init-range').value = val;
+                    const currentMax = parseInt(document.getElementById('wd-init-range').max);
+                    if (val > currentMax) document.getElementById('wd-init-range').max = val * 1.5;
+                    document.getElementById('auto-sync-badge').style.display = 'inline-block';
+                } else {
+                    document.getElementById('auto-sync-badge').style.display = 'none';
+                }
+                calculate();
+            });
+        }
+
+        function changeValue(targetId, step) {
+            const current = getVal(targetId);
+            let nextVal;
+            if (step % 1 !== 0) nextVal = parseFloat((current + step).toFixed(1)); else nextVal = current + step;
+            if (nextVal < 0) nextVal = 0;
+            setVal(targetId, nextVal);
+            document.getElementById(targetId).dispatchEvent(new Event('input'));
+            setVal(targetId, nextVal);
+        }
+
+        function toggleHint(id) { const el = document.getElementById(id); el.style.display = (el.style.display === 'block') ? 'none' : 'block'; }
+        function toggleDetails() { const area = document.getElementById('details-area'); const icon = document.getElementById('dt-icon'); if (area.style.display === 'block') { area.style.display = 'none'; icon.textContent = '＋'; } else { area.style.display = 'block'; icon.textContent = '－'; } }
+        function setInf(val) { document.getElementById('inf-rate-num').value = val; document.getElementById('inf-rate-range').value = val; calculate(); }
+
+        function switchTab(mode) {
+            currentMode = mode;
+            document.querySelectorAll('.tab').forEach(el => el.classList.toggle('active', el.dataset.mode === mode));
+            document.querySelectorAll('.input-section').forEach(el => el.classList.remove('active'));
+            document.getElementById('sec-' + mode).classList.add('active');
+            const card = document.getElementById('result-card');
+            const mainTxt = document.getElementById('res-main');
+            const sfVal = document.getElementById('sf-val');
+            const sfLabel = document.getElementById('sf-label');
+            if (mode === 'with') {
+                card.classList.add('orange-theme');
+                mainTxt.classList.add('orange-text');
+                sfVal.classList.add('orange-text');
+                sfLabel.textContent = "資産寿命";
+            } else {
+                card.classList.remove('orange-theme');
+                mainTxt.classList.remove('orange-text');
+                sfVal.classList.remove('orange-text');
+                sfLabel.textContent = "将来の資産合計";
+            }
+            calculate();
+        }
+
+        function getCheerMessage(val, mode) {
+            if (mode === 'with') return "安心できる老後プランを！👴";
+            if (val < 1000000) return "まずは100万円を目指そう！🌱";
+            if (val < 5000000) return "生活防衛資金クリアレベル！🛡️";
+            if (val < 10000000) return "新車が一括で買える金額！🚗";
+            if (val < 20000000) return "大台！資産1000万円突破！💰";
+            if (val < 30000000) return "老後2000万円問題をクリア！✨";
+            if (val < 50000000) return "アッパーマス層の仲間入り！💎";
+            if (val < 100000000) return "準富裕層が見えてきた！🚀";
+            return "富裕層レベル！億り人です！👑";
+        }
+
+        function calculate() {
+            const infRate = parseFloat(document.getElementById('inf-rate-num').value) / 100;
+            if (currentMode === 'sim') calcSim(infRate);
+            else calcWithdraw(infRate);
+            updateShareLink();
+        }
+
+        // ★重要：積立後、放置期間も含めて履歴を作成する
+        function calcSim(infRate) {
+            const startAge = parseInt(document.getElementById('sim-age').value) || 0;
+            const amount = getVal('sim-amount-num');
+            const years = parseFloat(document.getElementById('sim-years-num').value);
+            const rate = parseFloat(document.getElementById('sim-rate-num').value) / 100;
+
+            let total = 0, principal = 0, nisaHit = false;
+            let labels = [], dataTotal = [], dataPrincipal = [];
+            labels.push(startAge + '歳'); dataTotal.push(0); dataPrincipal.push(0);
+
+            // 履歴初期化
+            simHistoryData = {};
+            simHistoryData[startAge] = 0;
+
+            // 積立期間の計算
+            for (let m = 1; m <= years * 12; m++) {
+                if (principal + amount > 18000000) {
+                    let remain = Math.max(0, 18000000 - principal);
+                    if (remain > 0) { principal += remain; total += remain; }
+                    nisaHit = true;
+                } else { principal += amount; total += amount; }
+                total *= (1 + rate / 12);
+
+                // 年単位で履歴保存 & グラフ用データ
+                let currentAgeInt = Math.floor(startAge + m / 12);
+                if (m % 12 === 0) {
+                    simHistoryData[currentAgeInt] = total;
+                    labels.push(currentAgeInt + '歳');
+                    dataTotal.push(Math.floor(total));
+                    dataPrincipal.push(Math.floor(principal));
+                }
+            }
+
+            // ★放置期間の計算（積立終了後〜100歳まで運用のみ継続）
+            let coastingTotal = total;
+            let currentSimAge = startAge + years;
+            // 積立終了年齢が整数でない場合の調整は簡易的に無視し、次の整数年齢から計算
+            for (let m = 1; m <= (100 - currentSimAge) * 12; m++) {
+                coastingTotal *= (1 + rate / 12);
+                if (m % 12 === 0) {
+                    let age = Math.floor(currentSimAge + m / 12);
+                    simHistoryData[age] = coastingTotal;
+                }
+            }
+
+            const endAge = startAge + years;
+            lastSimResult.total = Math.floor(total);
+            lastSimResult.endAge = endAge;
+
+            updateUI({
+                title: `${endAge}歳時点の資産合計`, main: total,
+                subs: [`積立元本: ${formatNum(principal)}円`, `運用益: +${formatNum(Math.floor(total) - principal)}円`],
+                nisaAlert: nisaHit, infVal: (infRate > 0) ? total / Math.pow(1 + infRate, years) : null, infRate: infRate, mode: 'sim'
+            });
+            drawChart(labels, [{ label: '資産評価額', data: dataTotal, color: '#4CAF50', bg: 'rgba(76, 175, 80, 0.1)' }, { label: '元本', data: dataPrincipal, color: '#9E9E9E', bg: 'rgba(0,0,0,0)', dash: [5, 5] }]);
+            shareData.text = `【NISA人生設計】${startAge}歳から月${(amount / 10000).toFixed(1)}万円積立→${endAge}歳で【 ${Math.floor(total / 10000).toLocaleString()} 万円 】に！📈 (年利${(rate * 100).toFixed(1)}%)`;
+        }
+
+        function calcWithdraw(infRate) {
+            const startAge = parseInt(document.getElementById('wd-age').value) || 60;
+            let balance = getVal('wd-init-num');
+            const initAmount = getVal('wd-amount-num');
+            const rate = parseFloat(document.getElementById('wd-rate-num').value) / 100;
+            let labels = [], dataBalance = [], months = 0, currentWd = initAmount;
+            labels.push(startAge + '歳'); dataBalance.push(balance);
+
+            while (months < 50 * 12) {
+                balance *= (1 + rate / 12);
+                balance -= currentWd;
+                if ((months + 1) % 12 === 0 && infRate > 0) currentWd *= (1 + infRate);
+                months++;
+                if (balance <= 0) {
+                    balance = 0;
+                    if (months % 12 !== 0) { labels.push((startAge + months / 12).toFixed(1) + '歳'); dataBalance.push(0); }
+                    break;
+                }
+                if (months % 12 === 0) { labels.push((startAge + months / 12) + '歳'); dataBalance.push(balance); }
+            }
+            let resultAge = balance > 0 ? (startAge + 50) + "歳以上" : (startAge + months / 12).toFixed(1) + " 歳";
+            updateUI({
+                title: "資産が尽きる年齢", mainStr: resultAge,
+                subs: [`毎月受取: ${formatNum(initAmount)}円`, `運用年利: ${(rate * 100).toFixed(1)}%`],
+                nisaAlert: false, infRate: infRate, mode: 'with'
+            });
+            drawChart(labels, [{ label: '資産残高', data: dataBalance, color: '#FF9800', bg: 'rgba(255, 152, 0, 0.1)' }]);
+            shareData.text = `【老後シミュレーション】${Math.floor(getVal('wd-init-num') / 10000)}万円を運用しながら月${(initAmount / 10000).toFixed(1)}万円使うと...【 ${resultAge} 】まで持ちます！👴✨`;
+        }
+
+        function syncFromSim() {
+            if (lastSimResult.total <= 0) { alert("まずは「増やす」タブで計算してください"); return; }
+            setVal('wd-init-num', lastSimResult.total);
+            document.getElementById('wd-init-range').value = lastSimResult.total;
+            document.getElementById('wd-init-range').max = Math.max(100000000, lastSimResult.total * 1.5);
+            document.getElementById('wd-age').value = lastSimResult.endAge;
+            document.getElementById('auto-sync-badge').style.display = 'inline-block';
+            const t = document.getElementById('sync-toast'); t.style.display = 'block'; setTimeout(() => { t.style.display = 'none'; }, 3000);
+            calculate();
+        }
+
+        function updateUI(data) {
+            document.getElementById('res-title').textContent = data.title;
+            const mainVal = data.mainStr ? data.mainStr : formatNum(Math.floor(data.main)) + ' 円';
+            document.getElementById('res-main').textContent = mainVal;
+            document.getElementById('sf-val').textContent = mainVal;
+            const cheerEl = document.getElementById('cheer-msg');
+            cheerEl.textContent = getCheerMessage(data.main, data.mode);
+            cheerEl.className = data.mode === 'with' ? 'cheer-msg cheer-orange' : 'cheer-msg';
+            document.getElementById('res-sub').innerHTML = data.subs.map(t => `<div class="res-sub-item">${t}</div>`).join('');
+            document.getElementById('nisa-alert').style.display = data.nisaAlert ? 'inline-block' : 'none';
+            const n = document.getElementById('inflation-note');
+            if (data.infRate > 0) {
+                n.style.display = 'block';
+                n.innerHTML = data.mode === 'with'
+                    ? `<i class="fa-solid fa-circle-info"></i> インフレ率${(data.infRate * 100).toFixed(1)}%考慮：生活費が徐々に上昇する計算です`
+                    : `<i class="fa-solid fa-circle-info"></i> インフレ率${(data.infRate * 100).toFixed(1)}%考慮：現在の価値で約 <strong>${formatNum(Math.floor(data.infVal))} 円</strong> 相当`;
+            } else { n.style.display = 'none'; }
+        }
+
+        function drawChart(labels, datasets) {
+            const ctx = document.getElementById('myChart').getContext('2d');
+            if (myChart) myChart.destroy();
+            myChart = new Chart(ctx, {
+                type: 'line',
+                data: { labels, datasets: datasets.map(ds => ({ label: ds.label, data: ds.data, borderColor: ds.color, backgroundColor: ds.bg, borderWidth: 3, fill: true, tension: 0.4, pointRadius: 0, pointHitRadius: 20 })) },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false, callbacks: { label: c => c.dataset.label + ": " + Math.floor(c.raw).toLocaleString() + "円" } } },
+                    scales: { x: { grid: { display: false }, ticks: { maxTicksLimit: 6 } }, y: { beginAtZero: true, border: { display: false }, grid: { color: '#f0f0f0' }, ticks: { callback: v => v / 10000 + '万' } } }
+                }
+            });
+        }
+
+        function updateShareLink() {
+            const url = new URL(window.location.href);
+            // 短縮パラメータ
+            const map = {
+                'sim-age': 'sa', 'sim-amount-num': 'sm', 'sim-years-num': 'sy', 'sim-rate-num': 'sr',
+                'wd-age': 'wa', 'wd-init-num': 'wi', 'wd-amount-num': 'wm', 'wd-rate-num': 'wr', 'inf-rate-num': 'ir', 'mode': 'md'
+            };
+            Object.keys(map).forEach(k => {
+                const el = document.getElementById(k);
+                if (el) {
+                    const rawVal = el.classList.contains('formatted-input') ? getVal(k) : el.value;
+                    url.searchParams.set(map[k], rawVal);
+                }
+            });
+            url.searchParams.set('md', currentMode);
+            document.getElementById('x-share-link').href = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareData.text)}&url=${encodeURIComponent(url.toString())}`;
+        }
+
+        function loadParams() {
+            const url = new URL(window.location.href);
+            const map = {
+                'sim-age': 'sa', 'sim-amount-num': 'sm', 'sim-years-num': 'sy', 'sim-rate-num': 'sr',
+                'wd-age': 'wa', 'wd-init-num': 'wi', 'wd-amount-num': 'wm', 'wd-rate-num': 'wr', 'inf-rate-num': 'ir', 'mode': 'md'
+            };
+            const revMap = Object.fromEntries(Object.entries(map).map(([k, v]) => [v, k]));
+
+            Object.keys(revMap).forEach(k => {
+                if (url.searchParams.has(k)) {
+                    const targetId = revMap[k];
+                    const val = url.searchParams.get(k);
+                    setVal(targetId, val);
+
+                    const rangeId = targetId.replace('-num', '-range');
+                    const range = document.getElementById(rangeId);
+                    if (range) range.value = val;
+                }
+            });
+            if (url.searchParams.has('md')) switchTab(url.searchParams.get('md'));
+        }
+    </script>
+</body>
+
+</html>
