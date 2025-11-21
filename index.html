@@ -752,316 +752,356 @@
             <a href="ranking.html" class="cta-btn">おすすめのNISA口座を見る <i class="fa-solid fa-chevron-right"></i></a>
         </div>
 
-        <div style="margin-top: 30px; text-align: center; font-size: 11px; color: #a0aec0;">
-            <a href="privacy.html" style="color: #a0aec0; text-decoration: none;">プライバシーポリシー</a>
-        </div>
-    </div>
+        <!-- AdSense対策：テキストコンテンツ -->
+        <div
+            style="margin-top: 50px; padding: 30px; background: #fff; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #edf2f7;">
+            <h2
+                style="font-size: 18px; color: #2d3436; margin-bottom: 20px; display: flex; align-items: center; border-bottom: 2px solid #4CAF50; padding-bottom: 10px;">
+                <i class="fa-solid fa-book-open" style="color: #4CAF50; margin-right: 10px;"></i> NISA人生設計シミュレーターとは？
+            </h2>
+            <p style="font-size: 14px; color: #636e72; margin-bottom: 25px; line-height: 1.8;">
+                「NISA人生設計シミュレーター」は、新NISA（少額投資非課税制度）を活用した資産形成を、誰でも簡単にシミュレーションできる無料ツールです。<br>
+                毎月の積立額や想定利回りを入力するだけで、将来の資産額を瞬時に計算し、グラフで可視化します。
+            </p>
 
-    <div class="sticky-footer">
-        <div class="sf-label" id="sf-label">将来の資産合計</div>
-        <div class="sf-val" id="sf-val">0 円</div>
-    </div>
+            <h3 style="font-size: 16px; color: #2d3436; margin-bottom: 15px; display: flex; align-items: center;">
+                <i class="fa-solid fa-lightbulb" style="color: #FF9800; margin-right: 8px;"></i> なぜシミュレーションが必要なのか
+            </h3>
+            <p
+                style="font-size: 14px; color: #636e72; margin-bottom: 25px; line-height: 1.8; background: #fffaf0; padding: 15px; border-radius: 10px; border-left: 4px solid #FF9800;">
+                長期投資において「複利効果」は非常に大きな力を持ちますが、頭の中だけで計算するのは困難です。<br>
+                このツールを使うことで、「毎月いくら積み立てれば目標額に届くのか」「何歳で取り崩しを始めればよいか」を具体的にイメージでき、無理のないライフプランを立てる手助けとなります。
+            </p>
 
-    <script>
-        /* --- 変数 --- */
-        let myChart = null;
-        let currentMode = 'sim';
-        let lastSimResult = { total: 0, endAge: 60 };
-        let shareData = { text: "" };
-        let simHistoryData = {}; // ★全年齢の資産履歴を保存
+            <h3 style="font-size: 16px; color: #2d3436; margin-bottom: 15px; display: flex; align-items: center;">
+                <i class="fa-solid fa-circle-check" style="color: #2196F3; margin-right: 8px;"></i> シミュレーションの前提条件
+            </h3>
+            <ul style="font-size: 14px; color: #636e72; padding: 0; list-style: none; margin-bottom: 10px;">
+<li style="margin-bottom: 12px; padding-left: 20px; position: relative;">
+    <i class="fa-solid fa-check" style="position: absolute; left: 0; top: 3px; color: #2196F3; font-size: 12px;"></i>
+    <strong>非課税再投資:</strong> NISA口座での運用を想定し、運用益はすべて非課税で再投資されるものとして計算しています。
+</li>
+<li style="margin-bottom: 12px; padding-left: 20px; position: relative;">
+    <i class="fa-solid fa-check" style="position: absolute; left: 0; top: 3px; color: #2196F3; font-size: 12px;"></i>
+    <strong>インフレ率:</strong> 詳細設定でインフレ率を設定した場合、将来の資産額を「現在の価値」に換算して表示することも可能です。
+</li>
+<li style="margin-bottom: 12px; padding-left: 20px; position: relative;">
+    <i class="fa-solid fa-check" style="position: absolute; left: 0; top: 3px; color: #2196F3; font-size: 12px;"></i>
+    <strong>手数料:</strong> 投資信託の信託報酬などのコストは考慮していません（実質利回りとして入力してください）。
+</li>
+</ul>
+</div>
 
-        /* --- ヘルパー: カンマ区切り --- */
-        function formatNum(num) { return Number(num).toLocaleString(); }
-        function getVal(id) {
-            const el = document.getElementById(id);
-            if (!el) return 0;
-            const valStr = el.value.toString().replace(/,/g, '');
-            return parseFloat(valStr) || 0;
+<div style="margin-top: 30px; text-align: center; font-size: 11px; color: #a0aec0;">
+    <a href="about.html" style="color: #a0aec0; text-decoration: none; margin-right: 15px;">運営者情報</a>
+    <a href="privacy.html" style="color: #a0aec0; text-decoration: none;">プライバシーポリシー</a>
+</div>
+
+<script>
+    /* --- 変数 --- */
+    let myChart = null;
+    let currentMode = 'sim';
+    let lastSimResult = { total: 0, endAge: 60 };
+    let shareData = { text: "" };
+    let simHistoryData = {}; // ★全年齢の資産履歴を保存
+
+    /* --- ヘルパー: カンマ区切り --- */
+    function formatNum(num) { return Number(num).toLocaleString(); }
+    function getVal(id) {
+        const el = document.getElementById(id);
+        if (!el) return 0;
+        const valStr = el.value.toString().replace(/,/g, '');
+        return parseFloat(valStr) || 0;
+    }
+    function setVal(id, num) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        if (el.classList.contains('formatted-input')) {
+            el.value = Number(num).toLocaleString();
+        } else {
+            el.value = num;
         }
-        function setVal(id, num) {
-            const el = document.getElementById(id);
-            if (!el) return;
-            if (el.classList.contains('formatted-input')) {
-                el.value = Number(num).toLocaleString();
-            } else {
-                el.value = num;
-            }
-        }
+    }
 
-        window.addEventListener('DOMContentLoaded', () => {
-            setupListeners();
-            loadParams();
-            calculate();
+    window.addEventListener('DOMContentLoaded', () => {
+        setupListeners();
+        loadParams();
+        calculate();
+    });
+
+    function setupListeners() {
+        const pairs = [
+            ['sim-amount-range', 'sim-amount-num'],
+            ['sim-years-range', 'sim-years-num'],
+            ['sim-rate-range', 'sim-rate-num'],
+            ['wd-init-range', 'wd-init-num'],
+            ['wd-amount-range', 'wd-amount-num'],
+            ['wd-rate-range', 'wd-rate-num'],
+            ['inf-rate-range', 'inf-rate-num']
+        ];
+
+        pairs.forEach(p => {
+            const range = document.getElementById(p[0]);
+            const input = document.getElementById(p[1]);
+            range.addEventListener('input', () => { setVal(p[1], range.value); calculate(); });
+            input.addEventListener('input', () => { range.value = getVal(p[1]); calculate(); });
+            input.addEventListener('focus', function () { if (this.classList.contains('formatted-input')) this.value = getVal(p[1]); });
+            input.addEventListener('blur', function () { if (this.classList.contains('formatted-input')) setVal(p[1], getVal(p[1])); });
         });
 
-        function setupListeners() {
-            const pairs = [
-                ['sim-amount-range', 'sim-amount-num'],
-                ['sim-years-range', 'sim-years-num'],
-                ['sim-rate-range', 'sim-rate-num'],
-                ['wd-init-range', 'wd-init-num'],
-                ['wd-amount-range', 'wd-amount-num'],
-                ['wd-rate-range', 'wd-rate-num'],
-                ['inf-rate-range', 'inf-rate-num']
-            ];
+        document.getElementById('sim-age').addEventListener('input', calculate);
 
-            pairs.forEach(p => {
-                const range = document.getElementById(p[0]);
-                const input = document.getElementById(p[1]);
-                range.addEventListener('input', () => { setVal(p[1], range.value); calculate(); });
-                input.addEventListener('input', () => { range.value = getVal(p[1]); calculate(); });
-                input.addEventListener('focus', function () { if (this.classList.contains('formatted-input')) this.value = getVal(p[1]); });
-                input.addEventListener('blur', function () { if (this.classList.contains('formatted-input')) setVal(p[1], getVal(p[1])); });
-            });
-
-            document.getElementById('sim-age').addEventListener('input', calculate);
-
-            // ★連動ロジック (自動補完対応)
-            document.getElementById('wd-age').addEventListener('input', function () {
-                const newAge = parseInt(this.value);
-                if (simHistoryData[newAge] !== undefined) {
-                    const val = Math.floor(simHistoryData[newAge]);
-                    setVal('wd-init-num', val);
-                    document.getElementById('wd-init-range').value = val;
-                    const currentMax = parseInt(document.getElementById('wd-init-range').max);
-                    if (val > currentMax) document.getElementById('wd-init-range').max = val * 1.5;
-                    document.getElementById('auto-sync-badge').style.display = 'inline-block';
-                } else {
-                    document.getElementById('auto-sync-badge').style.display = 'none';
-                }
-                calculate();
-            });
-        }
-
-        function changeValue(targetId, step) {
-            const current = getVal(targetId);
-            let nextVal;
-            if (step % 1 !== 0) nextVal = parseFloat((current + step).toFixed(1)); else nextVal = current + step;
-            if (nextVal < 0) nextVal = 0;
-            setVal(targetId, nextVal);
-            document.getElementById(targetId).dispatchEvent(new Event('input'));
-            setVal(targetId, nextVal);
-        }
-
-        function toggleHint(id) { const el = document.getElementById(id); el.style.display = (el.style.display === 'block') ? 'none' : 'block'; }
-        function toggleDetails() { const area = document.getElementById('details-area'); const icon = document.getElementById('dt-icon'); if (area.style.display === 'block') { area.style.display = 'none'; icon.textContent = '＋'; } else { area.style.display = 'block'; icon.textContent = '－'; } }
-        function setInf(val) { document.getElementById('inf-rate-num').value = val; document.getElementById('inf-rate-range').value = val; calculate(); }
-
-        function switchTab(mode) {
-            currentMode = mode;
-            document.querySelectorAll('.tab').forEach(el => el.classList.toggle('active', el.dataset.mode === mode));
-            document.querySelectorAll('.input-section').forEach(el => el.classList.remove('active'));
-            document.getElementById('sec-' + mode).classList.add('active');
-            const card = document.getElementById('result-card');
-            const mainTxt = document.getElementById('res-main');
-            const sfVal = document.getElementById('sf-val');
-            const sfLabel = document.getElementById('sf-label');
-            if (mode === 'with') {
-                card.classList.add('orange-theme');
-                mainTxt.classList.add('orange-text');
-                sfVal.classList.add('orange-text');
-                sfLabel.textContent = "資産寿命";
+        // ★連動ロジック (自動補完対応)
+        document.getElementById('wd-age').addEventListener('input', function () {
+            const newAge = parseInt(this.value);
+            if (simHistoryData[newAge] !== undefined) {
+                const val = Math.floor(simHistoryData[newAge]);
+                setVal('wd-init-num', val);
+                document.getElementById('wd-init-range').value = val;
+                const currentMax = parseInt(document.getElementById('wd-init-range').max);
+                if (val > currentMax) document.getElementById('wd-init-range').max = val * 1.5;
+                document.getElementById('auto-sync-badge').style.display = 'inline-block';
             } else {
-                card.classList.remove('orange-theme');
-                mainTxt.classList.remove('orange-text');
-                sfVal.classList.remove('orange-text');
-                sfLabel.textContent = "将来の資産合計";
+                document.getElementById('auto-sync-badge').style.display = 'none';
             }
             calculate();
+        });
+    }
+
+    function changeValue(targetId, step) {
+        const current = getVal(targetId);
+        let nextVal;
+        if (step % 1 !== 0) nextVal = parseFloat((current + step).toFixed(1)); else nextVal = current + step;
+        if (nextVal < 0) nextVal = 0;
+        setVal(targetId, nextVal);
+        document.getElementById(targetId).dispatchEvent(new Event('input'));
+        setVal(targetId, nextVal);
+    }
+
+    function toggleHint(id) { const el = document.getElementById(id); el.style.display = (el.style.display === 'block') ? 'none' : 'block'; }
+    function toggleDetails() { const area = document.getElementById('details-area'); const icon = document.getElementById('dt-icon'); if (area.style.display === 'block') { area.style.display = 'none'; icon.textContent = '＋'; } else { area.style.display = 'block'; icon.textContent = '－'; } }
+    function setInf(val) { document.getElementById('inf-rate-num').value = val; document.getElementById('inf-rate-range').value = val; calculate(); }
+
+    function switchTab(mode) {
+        currentMode = mode;
+        document.querySelectorAll('.tab').forEach(el => el.classList.toggle('active', el.dataset.mode === mode));
+        document.querySelectorAll('.input-section').forEach(el => el.classList.remove('active'));
+        document.getElementById('sec-' + mode).classList.add('active');
+        const card = document.getElementById('result-card');
+        const mainTxt = document.getElementById('res-main');
+        const sfVal = document.getElementById('sf-val');
+        const sfLabel = document.getElementById('sf-label');
+        if (mode === 'with') {
+            card.classList.add('orange-theme');
+            mainTxt.classList.add('orange-text');
+            sfVal.classList.add('orange-text');
+            sfLabel.textContent = "資産寿命";
+        } else {
+            card.classList.remove('orange-theme');
+            mainTxt.classList.remove('orange-text');
+            sfVal.classList.remove('orange-text');
+            sfLabel.textContent = "将来の資産合計";
         }
+        calculate();
+    }
 
-        function getCheerMessage(val, mode) {
-            if (mode === 'with') return "安心できる老後プランを！👴";
-            if (val < 1000000) return "まずは100万円を目指そう！🌱";
-            if (val < 5000000) return "生活防衛資金クリアレベル！🛡️";
-            if (val < 10000000) return "新車が一括で買える金額！🚗";
-            if (val < 20000000) return "大台！資産1000万円突破！💰";
-            if (val < 30000000) return "老後2000万円問題をクリア！✨";
-            if (val < 50000000) return "アッパーマス層の仲間入り！💎";
-            if (val < 100000000) return "準富裕層が見えてきた！🚀";
-            return "富裕層レベル！億り人です！👑";
-        }
+    function getCheerMessage(val, mode) {
+        if (mode === 'with') return "安心できる老後プランを！👴";
+        if (val < 1000000) return "まずは100万円を目指そう！🌱";
+        if (val < 5000000) return "生活防衛資金クリアレベル！🛡️";
+        if (val < 10000000) return "新車が一括で買える金額！🚗";
+        if (val < 20000000) return "大台！資産1000万円突破！💰";
+        if (val < 30000000) return "老後2000万円問題をクリア！✨";
+        if (val < 50000000) return "アッパーマス層の仲間入り！💎";
+        if (val < 100000000) return "準富裕層が見えてきた！🚀";
+        return "富裕層レベル！億り人です！👑";
+    }
 
-        function calculate() {
-            const infRate = parseFloat(document.getElementById('inf-rate-num').value) / 100;
-            if (currentMode === 'sim') calcSim(infRate);
-            else calcWithdraw(infRate);
-            updateShareLink();
-        }
+    function calculate() {
+        const infRate = parseFloat(document.getElementById('inf-rate-num').value) / 100;
+        if (currentMode === 'sim') calcSim(infRate);
+        else calcWithdraw(infRate);
+        updateShareLink();
+    }
 
-        // ★重要：積立後、放置期間も含めて履歴を作成する
-        function calcSim(infRate) {
-            const startAge = parseInt(document.getElementById('sim-age').value) || 0;
-            const amount = getVal('sim-amount-num');
-            const years = parseFloat(document.getElementById('sim-years-num').value);
-            const rate = parseFloat(document.getElementById('sim-rate-num').value) / 100;
+    // ★重要：積立後、放置期間も含めて履歴を作成する
+    function calcSim(infRate) {
+        const startAge = parseInt(document.getElementById('sim-age').value) || 0;
+        const amount = getVal('sim-amount-num');
+        const years = parseFloat(document.getElementById('sim-years-num').value);
+        const rate = parseFloat(document.getElementById('sim-rate-num').value) / 100;
 
-            let total = 0, principal = 0, nisaHit = false;
-            let labels = [], dataTotal = [], dataPrincipal = [];
-            labels.push(startAge + '歳'); dataTotal.push(0); dataPrincipal.push(0);
+        let total = 0, principal = 0, nisaHit = false;
+        let labels = [], dataTotal = [], dataPrincipal = [];
+        labels.push(startAge + '歳'); dataTotal.push(0); dataPrincipal.push(0);
 
-            // 履歴初期化
-            simHistoryData = {};
-            simHistoryData[startAge] = 0;
+        // 履歴初期化
+        simHistoryData = {};
+        simHistoryData[startAge] = 0;
 
-            // 積立期間の計算
-            for (let m = 1; m <= years * 12; m++) {
-                if (principal + amount > 18000000) {
-                    let remain = Math.max(0, 18000000 - principal);
-                    if (remain > 0) { principal += remain; total += remain; }
-                    nisaHit = true;
-                } else { principal += amount; total += amount; }
-                total *= (1 + rate / 12);
+        // 積立期間の計算
+        for (let m = 1; m <= years * 12; m++) {
+            if (principal + amount > 18000000) {
+                let remain = Math.max(0, 18000000 - principal);
+                if (remain > 0) { principal += remain; total += remain; }
+                nisaHit = true;
+            } else { principal += amount; total += amount; }
+            total *= (1 + rate / 12);
 
-                // 年単位で履歴保存 & グラフ用データ
-                let currentAgeInt = Math.floor(startAge + m / 12);
-                if (m % 12 === 0) {
-                    simHistoryData[currentAgeInt] = total;
-                    labels.push(currentAgeInt + '歳');
-                    dataTotal.push(Math.floor(total));
-                    dataPrincipal.push(Math.floor(principal));
-                }
+            // 年単位で履歴保存 & グラフ用データ
+            let currentAgeInt = Math.floor(startAge + m / 12);
+            if (m % 12 === 0) {
+                simHistoryData[currentAgeInt] = total;
+                labels.push(currentAgeInt + '歳');
+                dataTotal.push(Math.floor(total));
+                dataPrincipal.push(Math.floor(principal));
             }
+        }
 
-            // ★放置期間の計算（積立終了後〜100歳まで運用のみ継続）
-            let coastingTotal = total;
-            let currentSimAge = startAge + years;
-            // 積立終了年齢が整数でない場合の調整は簡易的に無視し、次の整数年齢から計算
-            for (let m = 1; m <= (100 - currentSimAge) * 12; m++) {
-                coastingTotal *= (1 + rate / 12);
-                if (m % 12 === 0) {
-                    let age = Math.floor(currentSimAge + m / 12);
-                    simHistoryData[age] = coastingTotal;
-                }
+        // ★放置期間の計算（積立終了後〜100歳まで運用のみ継続）
+        let coastingTotal = total;
+        let currentSimAge = startAge + years;
+        // 積立終了年齢が整数でない場合の調整は簡易的に無視し、次の整数年齢から計算
+        for (let m = 1; m <= (100 - currentSimAge) * 12; m++) {
+            coastingTotal *= (1 + rate / 12);
+            if (m % 12 === 0) {
+                let age = Math.floor(currentSimAge + m / 12);
+                simHistoryData[age] = coastingTotal;
             }
-
-            const endAge = startAge + years;
-            lastSimResult.total = Math.floor(total);
-            lastSimResult.endAge = endAge;
-
-            updateUI({
-                title: `${endAge}歳時点の資産合計`, main: total,
-                subs: [`積立元本: ${formatNum(principal)}円`, `運用益: +${formatNum(Math.floor(total) - principal)}円`],
-                nisaAlert: nisaHit, infVal: (infRate > 0) ? total / Math.pow(1 + infRate, years) : null, infRate: infRate, mode: 'sim'
-            });
-            drawChart(labels, [{ label: '資産評価額', data: dataTotal, color: '#4CAF50', bg: 'rgba(76, 175, 80, 0.1)' }, { label: '元本', data: dataPrincipal, color: '#9E9E9E', bg: 'rgba(0,0,0,0)', dash: [5, 5] }]);
-            shareData.text = `【NISA人生設計】${startAge}歳から月${(amount / 10000).toFixed(1)}万円積立→${endAge}歳で【 ${Math.floor(total / 10000).toLocaleString()} 万円 】に！📈 (年利${(rate * 100).toFixed(1)}%)`;
         }
 
-        function calcWithdraw(infRate) {
-            const startAge = parseInt(document.getElementById('wd-age').value) || 60;
-            let balance = getVal('wd-init-num');
-            const initAmount = getVal('wd-amount-num');
-            const rate = parseFloat(document.getElementById('wd-rate-num').value) / 100;
-            let labels = [], dataBalance = [], months = 0, currentWd = initAmount;
-            labels.push(startAge + '歳'); dataBalance.push(balance);
+        const endAge = startAge + years;
+        lastSimResult.total = Math.floor(total);
+        lastSimResult.endAge = endAge;
 
-            while (months < 50 * 12) {
-                balance *= (1 + rate / 12);
-                balance -= currentWd;
-                if ((months + 1) % 12 === 0 && infRate > 0) currentWd *= (1 + infRate);
-                months++;
-                if (balance <= 0) {
-                    balance = 0;
-                    if (months % 12 !== 0) { labels.push((startAge + months / 12).toFixed(1) + '歳'); dataBalance.push(0); }
-                    break;
-                }
-                if (months % 12 === 0) { labels.push((startAge + months / 12) + '歳'); dataBalance.push(balance); }
+        updateUI({
+            title: `${endAge}歳時点の資産合計`, main: total,
+            subs: [`積立元本: ${formatNum(principal)}円`, `運用益: +${formatNum(Math.floor(total) - principal)}円`],
+            nisaAlert: nisaHit, infVal: (infRate > 0) ? total / Math.pow(1 + infRate, years) : null, infRate: infRate, mode: 'sim'
+        });
+        drawChart(labels, [{ label: '資産評価額', data: dataTotal, color: '#4CAF50', bg: 'rgba(76, 175, 80, 0.1)' }, { label: '元本', data: dataPrincipal, color: '#9E9E9E', bg: 'rgba(0,0,0,0)', dash: [5, 5] }]);
+        shareData.text = `【NISA人生設計】${startAge}歳から月${(amount / 10000).toFixed(1)}万円積立→${endAge}歳で【 ${Math.floor(total / 10000).toLocaleString()} 万円 】に！📈 (年利${(rate * 100).toFixed(1)}%)`;
+    }
+
+    function calcWithdraw(infRate) {
+        const startAge = parseInt(document.getElementById('wd-age').value) || 60;
+        let balance = getVal('wd-init-num');
+        const initAmount = getVal('wd-amount-num');
+        const rate = parseFloat(document.getElementById('wd-rate-num').value) / 100;
+        let labels = [], dataBalance = [], months = 0, currentWd = initAmount;
+        labels.push(startAge + '歳'); dataBalance.push(balance);
+
+        while (months < 50 * 12) {
+            balance *= (1 + rate / 12);
+            balance -= currentWd;
+            if ((months + 1) % 12 === 0 && infRate > 0) currentWd *= (1 + infRate);
+            months++;
+            if (balance <= 0) {
+                balance = 0;
+                if (months % 12 !== 0) { labels.push((startAge + months / 12).toFixed(1) + '歳'); dataBalance.push(0); }
+                break;
             }
-            let resultAge = balance > 0 ? (startAge + 50) + "歳以上" : (startAge + months / 12).toFixed(1) + " 歳";
-            updateUI({
-                title: "資産が尽きる年齢", mainStr: resultAge,
-                subs: [`毎月受取: ${formatNum(initAmount)}円`, `運用年利: ${(rate * 100).toFixed(1)}%`],
-                nisaAlert: false, infRate: infRate, mode: 'with'
-            });
-            drawChart(labels, [{ label: '資産残高', data: dataBalance, color: '#FF9800', bg: 'rgba(255, 152, 0, 0.1)' }]);
-            shareData.text = `【老後シミュレーション】${Math.floor(getVal('wd-init-num') / 10000)}万円を運用しながら月${(initAmount / 10000).toFixed(1)}万円使うと...【 ${resultAge} 】まで持ちます！👴✨`;
+            if (months % 12 === 0) { labels.push((startAge + months / 12) + '歳'); dataBalance.push(balance); }
         }
+        let resultAge = balance > 0 ? (startAge + 50) + "歳以上" : (startAge + months / 12).toFixed(1) + " 歳";
+        updateUI({
+            title: "資産が尽きる年齢", mainStr: resultAge,
+            subs: [`毎月受取: ${formatNum(initAmount)}円`, `運用年利: ${(rate * 100).toFixed(1)}%`],
+            nisaAlert: false, infRate: infRate, mode: 'with'
+        });
+        drawChart(labels, [{ label: '資産残高', data: dataBalance, color: '#FF9800', bg: 'rgba(255, 152, 0, 0.1)' }]);
+        shareData.text = `【老後シミュレーション】${Math.floor(getVal('wd-init-num') / 10000)}万円を運用しながら月${(initAmount / 10000).toFixed(1)}万円使うと...【 ${resultAge} 】まで持ちます！👴✨`;
+    }
 
-        function syncFromSim() {
-            if (lastSimResult.total <= 0) { alert("まずは「増やす」タブで計算してください"); return; }
-            setVal('wd-init-num', lastSimResult.total);
-            document.getElementById('wd-init-range').value = lastSimResult.total;
-            document.getElementById('wd-init-range').max = Math.max(100000000, lastSimResult.total * 1.5);
-            document.getElementById('wd-age').value = lastSimResult.endAge;
-            document.getElementById('auto-sync-badge').style.display = 'inline-block';
-            const t = document.getElementById('sync-toast'); t.style.display = 'block'; setTimeout(() => { t.style.display = 'none'; }, 3000);
-            calculate();
-        }
+    function syncFromSim() {
+        if (lastSimResult.total <= 0) { alert("まずは「増やす」タブで計算してください"); return; }
+        setVal('wd-init-num', lastSimResult.total);
+        document.getElementById('wd-init-range').value = lastSimResult.total;
+        document.getElementById('wd-init-range').max = Math.max(100000000, lastSimResult.total * 1.5);
+        document.getElementById('wd-age').value = lastSimResult.endAge;
+        document.getElementById('auto-sync-badge').style.display = 'inline-block';
+        const t = document.getElementById('sync-toast'); t.style.display = 'block'; setTimeout(() => { t.style.display = 'none'; }, 3000);
+        calculate();
+    }
 
-        function updateUI(data) {
-            document.getElementById('res-title').textContent = data.title;
-            const mainVal = data.mainStr ? data.mainStr : formatNum(Math.floor(data.main)) + ' 円';
-            document.getElementById('res-main').textContent = mainVal;
-            document.getElementById('sf-val').textContent = mainVal;
-            const cheerEl = document.getElementById('cheer-msg');
-            cheerEl.textContent = getCheerMessage(data.main, data.mode);
-            cheerEl.className = data.mode === 'with' ? 'cheer-msg cheer-orange' : 'cheer-msg';
-            document.getElementById('res-sub').innerHTML = data.subs.map(t => `<div class="res-sub-item">${t}</div>`).join('');
-            document.getElementById('nisa-alert').style.display = data.nisaAlert ? 'inline-block' : 'none';
-            const n = document.getElementById('inflation-note');
-            if (data.infRate > 0) {
-                n.style.display = 'block';
-                n.innerHTML = data.mode === 'with'
-                    ? `<i class="fa-solid fa-circle-info"></i> インフレ率${(data.infRate * 100).toFixed(1)}%考慮：生活費が徐々に上昇する計算です`
-                    : `<i class="fa-solid fa-circle-info"></i> インフレ率${(data.infRate * 100).toFixed(1)}%考慮：現在の価値で約 <strong>${formatNum(Math.floor(data.infVal))} 円</strong> 相当`;
-            } else { n.style.display = 'none'; }
-        }
+    function updateUI(data) {
+        document.getElementById('res-title').textContent = data.title;
+        const mainVal = data.mainStr ? data.mainStr : formatNum(Math.floor(data.main)) + ' 円';
+        document.getElementById('res-main').textContent = mainVal;
+        document.getElementById('sf-val').textContent = mainVal;
+        const cheerEl = document.getElementById('cheer-msg');
+        cheerEl.textContent = getCheerMessage(data.main, data.mode);
+        cheerEl.className = data.mode === 'with' ? 'cheer-msg cheer-orange' : 'cheer-msg';
+        document.getElementById('res-sub').innerHTML = data.subs.map(t => `<div class="res-sub-item">${t}</div>`).join('');
+        document.getElementById('nisa-alert').style.display = data.nisaAlert ? 'inline-block' : 'none';
+        const n = document.getElementById('inflation-note');
+        if (data.infRate > 0) {
+            n.style.display = 'block';
+            n.innerHTML = data.mode === 'with'
+                ? `<i class="fa-solid fa-circle-info"></i> インフレ率${(data.infRate * 100).toFixed(1)}%考慮：生活費が徐々に上昇する計算です`
+                : `<i class="fa-solid fa-circle-info"></i> インフレ率${(data.infRate * 100).toFixed(1)}%考慮：現在の価値で約 <strong>${formatNum(Math.floor(data.infVal))} 円</strong> 相当`;
+        } else { n.style.display = 'none'; }
+    }
 
-        function drawChart(labels, datasets) {
-            const ctx = document.getElementById('myChart').getContext('2d');
-            if (myChart) myChart.destroy();
-            myChart = new Chart(ctx, {
-                type: 'line',
-                data: { labels, datasets: datasets.map(ds => ({ label: ds.label, data: ds.data, borderColor: ds.color, backgroundColor: ds.bg, borderWidth: 3, fill: true, tension: 0.4, pointRadius: 0, pointHitRadius: 20 })) },
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false, callbacks: { label: c => c.dataset.label + ": " + Math.floor(c.raw).toLocaleString() + "円" } } },
-                    scales: { x: { grid: { display: false }, ticks: { maxTicksLimit: 6 } }, y: { beginAtZero: true, border: { display: false }, grid: { color: '#f0f0f0' }, ticks: { callback: v => v / 10000 + '万' } } }
-                }
-            });
-        }
+    function drawChart(labels, datasets) {
+        const ctx = document.getElementById('myChart').getContext('2d');
+        if (myChart) myChart.destroy();
+        myChart = new Chart(ctx, {
+            type: 'line',
+            data: { labels, datasets: datasets.map(ds => ({ label: ds.label, data: ds.data, borderColor: ds.color, backgroundColor: ds.bg, borderWidth: 3, fill: true, tension: 0.4, pointRadius: 0, pointHitRadius: 20 })) },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false, callbacks: { label: c => c.dataset.label + ": " + Math.floor(c.raw).toLocaleString() + "円" } } },
+                scales: { x: { grid: { display: false }, ticks: { maxTicksLimit: 6 } }, y: { beginAtZero: true, border: { display: false }, grid: { color: '#f0f0f0' }, ticks: { callback: v => v / 10000 + '万' } } }
+            }
+        });
+    }
 
-        function updateShareLink() {
-            const url = new URL(window.location.href);
-            // 短縮パラメータ
-            const map = {
-                'sim-age': 'sa', 'sim-amount-num': 'sm', 'sim-years-num': 'sy', 'sim-rate-num': 'sr',
-                'wd-age': 'wa', 'wd-init-num': 'wi', 'wd-amount-num': 'wm', 'wd-rate-num': 'wr', 'inf-rate-num': 'ir', 'mode': 'md'
-            };
-            Object.keys(map).forEach(k => {
-                const el = document.getElementById(k);
-                if (el) {
-                    const rawVal = el.classList.contains('formatted-input') ? getVal(k) : el.value;
-                    url.searchParams.set(map[k], rawVal);
-                }
-            });
-            url.searchParams.set('md', currentMode);
-            document.getElementById('x-share-link').href = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareData.text)}&url=${encodeURIComponent(url.toString())}`;
-        }
+    function updateShareLink() {
+        const url = new URL(window.location.href);
+        // 短縮パラメータ
+        const map = {
+            'sim-age': 'sa', 'sim-amount-num': 'sm', 'sim-years-num': 'sy', 'sim-rate-num': 'sr',
+            'wd-age': 'wa', 'wd-init-num': 'wi', 'wd-amount-num': 'wm', 'wd-rate-num': 'wr', 'inf-rate-num': 'ir', 'mode': 'md'
+        };
+        Object.keys(map).forEach(k => {
+            const el = document.getElementById(k);
+            if (el) {
+                const rawVal = el.classList.contains('formatted-input') ? getVal(k) : el.value;
+                url.searchParams.set(map[k], rawVal);
+            }
+        });
+        url.searchParams.set('md', currentMode);
+        document.getElementById('x-share-link').href = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareData.text)}&url=${encodeURIComponent(url.toString())}`;
+    }
 
-        function loadParams() {
-            const url = new URL(window.location.href);
-            const map = {
-                'sim-age': 'sa', 'sim-amount-num': 'sm', 'sim-years-num': 'sy', 'sim-rate-num': 'sr',
-                'wd-age': 'wa', 'wd-init-num': 'wi', 'wd-amount-num': 'wm', 'wd-rate-num': 'wr', 'inf-rate-num': 'ir', 'mode': 'md'
-            };
-            const revMap = Object.fromEntries(Object.entries(map).map(([k, v]) => [v, k]));
+    function loadParams() {
+        const url = new URL(window.location.href);
+        const map = {
+            'sim-age': 'sa', 'sim-amount-num': 'sm', 'sim-years-num': 'sy', 'sim-rate-num': 'sr',
+            'wd-age': 'wa', 'wd-init-num': 'wi', 'wd-amount-num': 'wm', 'wd-rate-num': 'wr', 'inf-rate-num': 'ir', 'mode': 'md'
+        };
+        const revMap = Object.fromEntries(Object.entries(map).map(([k, v]) => [v, k]));
 
-            Object.keys(revMap).forEach(k => {
-                if (url.searchParams.has(k)) {
-                    const targetId = revMap[k];
-                    const val = url.searchParams.get(k);
-                    setVal(targetId, val);
+        Object.keys(revMap).forEach(k => {
+            if (url.searchParams.has(k)) {
+                const targetId = revMap[k];
+                const val = url.searchParams.get(k);
+                setVal(targetId, val);
 
-                    const rangeId = targetId.replace('-num', '-range');
-                    const range = document.getElementById(rangeId);
-                    if (range) range.value = val;
-                }
-            });
-            if (url.searchParams.has('md')) switchTab(url.searchParams.get('md'));
-        }
-    </script>
+                const rangeId = targetId.replace('-num', '-range');
+                const range = document.getElementById(rangeId);
+                if (range) range.value = val;
+            }
+        });
+        if (url.searchParams.has('md')) switchTab(url.searchParams.get('md'));
+    }
+</script>
+
+<div class="sticky-footer">
+    <div class="sf-label" id="sf-label">将来の資産合計</div>
+    <div class="sf-val" id="sf-val">0 円</div>
+</div>
 </body>
 
 </html>
